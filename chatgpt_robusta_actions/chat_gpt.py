@@ -79,6 +79,15 @@ def chat_gpt_enricher(alert: PrometheusKubernetesAlert, params: ChatGPTTokenPara
     ),
                     )
                 },
+                {
+                    f'Free Text': HeaderBlock(
+                        action=show_chat_gpt_search,
+                        action_params=ChatGPTParams(
+                            search_term=f"How to solve {alert_name} on Kubernetes?",
+                            chat_gpt_token=params.chat_gpt_token,
+                        ),
+                    )
+                },
             )
         ]
     )
