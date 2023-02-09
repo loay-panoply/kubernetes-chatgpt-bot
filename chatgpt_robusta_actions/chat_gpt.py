@@ -67,7 +67,7 @@ def chat_gpt_enricher(alert: PrometheusKubernetesAlert, params: ChatGPTTokenPara
     alert_reason = alert.alert.labels.get("reason", "")
     question_body = alert_name + "and reason " + alert_reason
 
-    if not question_body:
+    if not alert_name:
         return
 
     alert.add_enrichment(
@@ -77,7 +77,7 @@ def chat_gpt_enricher(alert: PrometheusKubernetesAlert, params: ChatGPTTokenPara
                     f'Ask ChatGPT': CallbackChoice(
                         action=show_chat_gpt_search,
                         action_params=ChatGPTParams(
-                            search_term=f"How to solve {question_body} on Kubernetes?",
+                            search_term=f"How to solve {alert_name} on Kubernetes?",
                             chat_gpt_token=params.chat_gpt_token,
     ),
                     )
