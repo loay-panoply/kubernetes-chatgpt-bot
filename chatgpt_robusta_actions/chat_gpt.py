@@ -39,7 +39,7 @@ def show_chat_gpt_search(event: ExecutionBaseEvent, params: ChatGPTParams):
             answers.append(choice.text)
 
     finding = Finding(
-        title="ChatGPT Results",
+        title="IntelliFix for the winning \nChatGPT Results",
         source=FindingSource.PROMETHEUS,
         aggregation_key="ChatGPT Wisdom",
     )
@@ -64,7 +64,10 @@ def chat_gpt_enricher(alert: PrometheusKubernetesAlert, params: ChatGPTTokenPara
     Add a button to the alert - clicking it will ask chat gpt to help find a solution.
     """
     alert_name = alert.alert.labels.get("alertname", "")
-    if not alert_name:
+    alert_reason = alert.alert.labels.get("reason", "")
+    question_body = alert_name + "and reason " + alert_reason
+
+    if not question_body:
         return
 
     alert.add_enrichment(
@@ -74,20 +77,20 @@ def chat_gpt_enricher(alert: PrometheusKubernetesAlert, params: ChatGPTTokenPara
                     f'Ask ChatGPT': CallbackChoice(
                         action=show_chat_gpt_search,
                         action_params=ChatGPTParams(
-                            search_term=f"How to solve {alert_name} on Kubernetes?",
+                            search_term=f"How to solve {question_body} on Kubernetes?",
                             chat_gpt_token=params.chat_gpt_token,
     ),
                     )
                 },
-                {
-                    f'Free Text': HeaderBlock(
-                        action=show_chat_gpt_search,
-                        action_params=ChatGPTParams(
-                            search_term=f"How to solve {alert_name} on Kubernetes?",
-                            chat_gpt_token=params.chat_gpt_token,
-                        ),
-                    )
-                },
+                # {
+                #     f'Free Text': HeaderBlock(
+                #         action=show_chat_gpt_search,
+                #         action_params=ChatGPTParams(
+                #             search_term=f"How to solve {alert_name} on Kubernetes?",
+                #             chat_gpt_token=params.chat_gpt_token,
+                #         ),
+                #     )
+                # },
             )
         ]
     )
